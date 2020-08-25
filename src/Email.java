@@ -7,18 +7,24 @@ public class Email {
     private static String USER_NAME = "";  // GMail user name (just the part before "@gmail.com")
     private static String PASSWORD = ""; // GMail password
     private static String RECIPIENT = "";
+    private static String HOST = "";
 
     public static void main(String[] args) {
         String subject, body;
         Scanner keyboard = new Scanner(System.in);
 
-        System.out.print("Enter the your Gmail user name (just the part before @gmail.com): ");
+        System.out.print("Enter the your email address: ");
         USER_NAME = keyboard.nextLine();
+        String[] user_name_split = USER_NAME.split("@");
+        USER_NAME = user_name_split[0];
+        HOST = user_name_split[1];
+        String[] host_split = HOST.split(".com");
+        HOST = host_split[0];
 
         System.out.print("\nEnter in your password: ");
         PASSWORD = keyboard.nextLine();
 
-        System.out.print("\nEnter in the full email of your recipient: ");
+        System.out.print("\nEnter in the email of your recipient: ");
         RECIPIENT = keyboard.nextLine();
 
         System.out.print("\nEnter in the subject of your email: ");
@@ -36,7 +42,7 @@ public class Email {
 
     private static void sendFromGMail(String from, String pass, String[] to, String subject, String body) {
         Properties props = System.getProperties();
-        String host = "smtp.gmail.com";
+        String host = "smtp."+HOST+".com";
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.host", host);
         props.put("mail.smtp.user", from);
@@ -56,8 +62,8 @@ public class Email {
                 toAddress[i] = new InternetAddress(to[i]);
             }
 
-            for( int i = 0; i < toAddress.length; i++) {
-                message.addRecipient(Message.RecipientType.TO, toAddress[i]);
+            for (InternetAddress address : toAddress) {
+                message.addRecipient(Message.RecipientType.TO, address);
             }
 
             message.setSubject(subject);
@@ -66,12 +72,13 @@ public class Email {
             transport.connect(host, from, pass);
             transport.sendMessage(message, message.getAllRecipients());
             transport.close();
-        }
-        catch (AddressException ae) {
+            System.out.println("\nFrom: " + USER_NAME);
+            System.out.println("To: " + RECIPIENT);
+            System.out.println("Subject: " + subject);
+            System.out.println(body);
+            System.out.println("\nSent message");
+        } catch (MessagingException ae) {
             ae.printStackTrace();
-        }
-        catch (MessagingException me) {
-            me.printStackTrace();
         }
     }
 }

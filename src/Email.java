@@ -1,5 +1,7 @@
 import java.util.*;
+import javax.swing.*;  
 import javax.mail.*;
+import java.awt.FlowLayout;
 import javax.mail.internet.*;
 
 public class Email {
@@ -8,9 +10,20 @@ public class Email {
     private static String PASSWORD = ""; // GMail password
     private static String RECIPIENT = "";
     private static String HOST = "";
-
+    static JTextField textfield1, textfield2, textfield3;  
     public static void main(String[] args) {
         String subject, body;
+        JFrame f = new JFrame("Text Field Examples");
+		    f.getContentPane().setLayout(new FlowLayout());
+            textfield1 = new JTextField("",12);
+		    textfield2 = new JTextField("",12);
+		    textfield3 = new JTextField("",12);
+		    f.getContentPane().add(textfield1);
+		    f.getContentPane().add(textfield2);
+		    f.getContentPane().add(textfield3);
+            f.setSize(400, 300);
+		    f.setVisible(true);
+        
         Scanner keyboard = new Scanner(System.in);
 
         System.out.print("Enter the your email address: ");

@@ -1,6 +1,9 @@
-import java.util.*;
 import javax.mail.*;
-import javax.mail.internet.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.Scanner;
 
 public class Email {
 
@@ -8,49 +11,115 @@ public class Email {
     private static String PASSWORD = ""; // GMail password
     private static String RECIPIENT = "";
     private static String HOST = "";
-    public static void main(String[] args) {
-        String subject, body, option;
+    private static String SUBJECT, BODY;
+
+    public static void clearScreen() {
+
+        try {
+
+            if (System.getProperty("os.name").contains("MacOs"))
+
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+
+            else
+                Runtime.getRuntime().exec("clear");
+
+        } catch (IOException | InterruptedException ex) {}
+
+
+    }
+
+    public static void login(){
         Scanner keyboard = new Scanner(System.in);
 
-        System.out.print("\033[H\033[2J");   
-        System.out.flush(); 
-        System.out.println("Login In To Begin");
+        System.out.println("\nLogin In To Begin");
+
         System.out.print("\nEnter your email address: ");
         USER_NAME = keyboard.nextLine();
-        String[] user_name_split = USER_NAME.split("@");
-        USER_NAME = user_name_split[0];
-        HOST = user_name_split[1];
-        String[] host_split = HOST.split(".com");
-        HOST = host_split[0];
 
         System.out.print("\nEnter in your password: ");
         PASSWORD = keyboard.nextLine();
-        // System.out.println("\nEmail " + USER_NAME + "@gmail.com");
-        // System.out.println("Password " + PASSWORD);
-        // System.out.print("\nIs this information correct(type YES OR NO) ");
-        // while(option.equals("YES")){
-            
-        // }
-        System.out.print("\033[H\033[2J");   
-        System.out.flush();  
+    }
+
+    public static void sendMessage(){
+        Scanner keyboard = new Scanner(System.in);
 
         System.out.print("\nEnter in the email of your recipient: ");
         RECIPIENT = keyboard.nextLine();
 
         System.out.print("\nEnter in the subject of your email: ");
-        subject = keyboard.nextLine();
+        SUBJECT = keyboard.nextLine();
 
         System.out.print("\nEnter in the message of the email: ");
-        body = keyboard.nextLine();
+        BODY = keyboard.nextLine();
 
-        System.out.print("\033[H\033[2J");   
-        System.out.flush(); 
+    }
+
+    public static boolean testConnection(){
+        Properties props = System.getProperties();
+        String host = "smtp."+HOST+".com";
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", host);
+        props.put("mail.smtp.user", USER_NAME);
+        props.put("mail.smtp.password", PASSWORD);
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.auth", "true");
+
+        Session session = Session.getDefaultInstance(props);
+        try {
+            Transport transport = session.getTransport("smtp");
+            transport.connect(host, USER_NAME, PASSWORD);
+            transport.close();
+            return true;
+        } catch (NoSuchProviderException e) {
+            System.out.println("No such provider...");
+            return false;
+        } catch (AuthenticationFailedException e) {
+            System.out.println("Authentication failed...");
+            return false;
+        } catch (MessagingException e) {
+            System.out.println("Message exception...");
+            return false;
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner keyboard = new Scanner(System.in);
+        clearScreen();
+
+        login();
+        boolean ISLOGININFOCORRECT = false;
+        do {
+            try {
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+                String[] user_name_split = USER_NAME.split("@");
+                USER_NAME = user_name_split[0];
+                HOST = user_name_split[1];
+                String[] host_split = HOST.split(".com");
+                HOST = host_split[0];
+                ISLOGININFOCORRECT = testConnection();
+                clearScreen();
+
+            } catch (ArrayIndexOutOfBoundsException ae) {
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+                ISLOGININFOCORRECT = testConnection();
+                System.out.println("\nLogin information incorrect. \nPlease try again");
+                login();
+                clearScreen();
+            }
+
+        } while (!ISLOGININFOCORRECT);
+
+        clearScreen();
+        sendMessage();
 
         String from = USER_NAME;
         String pass = PASSWORD;
         String[] to = { RECIPIENT }; // list of recipient email addresses
 
-        sendFromGMail(from, pass, to, subject, body);
+        sendFromGMail(from, pass, to, SUBJECT, BODY);
     }
 
     private static void sendFromGMail(String from, String pass, String[] to, String subject, String body) {

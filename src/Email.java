@@ -1,7 +1,5 @@
 import java.util.*;
-import javax.swing.*;  
 import javax.mail.*;
-import java.awt.FlowLayout;
 import javax.mail.internet.*;
 
 public class Email {
@@ -10,23 +8,14 @@ public class Email {
     private static String PASSWORD = ""; // GMail password
     private static String RECIPIENT = "";
     private static String HOST = "";
-    static JTextField textfield1, textfield2, textfield3;  
     public static void main(String[] args) {
-        String subject, body;
-        JFrame f = new JFrame("Text Field Examples");
-		    f.getContentPane().setLayout(new FlowLayout());
-            textfield1 = new JTextField("",12);
-		    textfield2 = new JTextField("",12);
-		    textfield3 = new JTextField("",12);
-		    f.getContentPane().add(textfield1);
-		    f.getContentPane().add(textfield2);
-		    f.getContentPane().add(textfield3);
-            f.setSize(400, 300);
-		    f.setVisible(true);
-        
+        String subject, body, option;
         Scanner keyboard = new Scanner(System.in);
 
-        System.out.print("Enter the your email address: ");
+        System.out.print("\033[H\033[2J");   
+        System.out.flush(); 
+        System.out.println("Login In To Begin");
+        System.out.print("\nEnter your email address: ");
         USER_NAME = keyboard.nextLine();
         String[] user_name_split = USER_NAME.split("@");
         USER_NAME = user_name_split[0];
@@ -36,6 +25,14 @@ public class Email {
 
         System.out.print("\nEnter in your password: ");
         PASSWORD = keyboard.nextLine();
+        // System.out.println("\nEmail " + USER_NAME + "@gmail.com");
+        // System.out.println("Password " + PASSWORD);
+        // System.out.print("\nIs this information correct(type YES OR NO) ");
+        // while(option.equals("YES")){
+            
+        // }
+        System.out.print("\033[H\033[2J");   
+        System.out.flush();  
 
         System.out.print("\nEnter in the email of your recipient: ");
         RECIPIENT = keyboard.nextLine();
@@ -45,6 +42,9 @@ public class Email {
 
         System.out.print("\nEnter in the message of the email: ");
         body = keyboard.nextLine();
+
+        System.out.print("\033[H\033[2J");   
+        System.out.flush(); 
 
         String from = USER_NAME;
         String pass = PASSWORD;
@@ -85,13 +85,13 @@ public class Email {
             transport.connect(host, from, pass);
             transport.sendMessage(message, message.getAllRecipients());
             transport.close();
-            System.out.println("\nFrom: " + USER_NAME);
+            System.out.println("\nFrom: " + USER_NAME + "@gmail.com");
             System.out.println("To: " + RECIPIENT);
             System.out.println("Subject: " + subject);
             System.out.println(body);
-            System.out.println("\nSent message");
+            System.out.println("\nSent message!");
         } catch (MessagingException ae) {
-            ae.printStackTrace();
+            System.out.println("Email not found! Please run the program again.");
         }
     }
 }
